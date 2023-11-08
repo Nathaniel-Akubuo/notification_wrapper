@@ -1,31 +1,35 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
+import 'package:notification_wrapper/src/typedefs.dart';
 
 import 'helper_functions.dart';
 
-class WrapperWidget extends StatefulWidget {
+class NotificationWrapperWidget extends StatefulWidget {
   final Widget child;
 
-  final ValueChanged<RemoteMessage>? onNotificationReceived;
-  final ValueChanged<RemoteMessage>? onTap;
-  final ValueChanged<RemoteMessage>? showNotification;
+  final RemoteMessageCallback? onNotificationReceived;
+  final RemoteMessageCallback? onTap;
+  final RemoteMessageCallback? showNotification;
 
-  final ValueChanged<String>? onTokenRefresh;
+  final TokenCallback? onTokenRefresh;
+  final TokenCallback? onGetToken;
 
-  const WrapperWidget({
+  const NotificationWrapperWidget({
     super.key,
     required this.child,
     this.onNotificationReceived,
     this.onTap,
     this.showNotification,
     this.onTokenRefresh,
+    this.onGetToken,
   });
 
   @override
-  State<WrapperWidget> createState() => _WrapperWidgetState();
+  State<NotificationWrapperWidget> createState() =>
+      _NotificationWrapperWidgetState();
 }
 
-class _WrapperWidgetState extends State<WrapperWidget> {
+class _NotificationWrapperWidgetState extends State<NotificationWrapperWidget> {
   final _fcm = FirebaseMessaging.instance;
 
   @override
@@ -37,6 +41,9 @@ class _WrapperWidgetState extends State<WrapperWidget> {
 
   Future<void> _listenForNotifications() async {
     await HelperFunctions.setupLocalNotifications(widget.onTap);
+    await HelperFunctions.setIOSOptions();
+    var token = await _fcm.getToken();
+    widget.onGetToken?.call(token);
 
     RemoteMessage? initialMessage = await _fcm.getInitialMessage();
 
@@ -49,6 +56,7 @@ class _WrapperWidgetState extends State<WrapperWidget> {
     });
 
     FirebaseMessaging.onMessage.listen((event) {
+      widget.onNotificationReceived?.call(event);
       if (widget.showNotification != null) {
         widget.showNotification!(event);
       } else {
@@ -56,7 +64,7 @@ class _WrapperWidgetState extends State<WrapperWidget> {
       }
     });
 
-    _fcm.onTokenRefresh.listen((event) => widget.onTokenRefresh?.call(event));
+    _fcm.onTokenRefresh.listen(widget.onTokenRefresh);
   }
 
   @override

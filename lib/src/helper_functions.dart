@@ -1,20 +1,27 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:notification_wrapper/src/typedefs.dart';
 
 final _localNotifications = FlutterLocalNotificationsPlugin();
+
 @pragma('vm:entry-point')
 void localNotificationsBackgroundHandler(NotificationResponse details) async {}
 
 @pragma('vm:entry-point')
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {}
 
+const _channelKey = 'notificationChannelKey';
+
 class HelperFunctions {
+  static final _fcm = FirebaseMessaging.instance;
+
   static Future<void> setupLocalNotifications(
-    ValueChanged<RemoteMessage>? onTap,
+    RemoteMessageCallback? onTap,
   ) async {
+    await _requestPermission();
     await _localNotifications.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -29,7 +36,7 @@ class HelperFunctions {
     );
 
     var foregroundNotificationChannel = const AndroidNotificationChannel(
-      'notificationChannelKey',
+      _channelKey,
       'Basic Notification Channel',
       importance: Importance.max,
     );
@@ -46,7 +53,7 @@ class HelperFunctions {
 
     if (android != null) {
       const androidDetails = AndroidNotificationDetails(
-        'notificationChannelKey',
+        _channelKey,
         'Basic Notification Channel',
         priority: Priority.max,
         importance: Importance.max,
@@ -60,6 +67,31 @@ class HelperFunctions {
         notification.body,
         const NotificationDetails(android: androidDetails, iOS: iosDetails),
         payload: jsonEncode(message.toMap()),
+      );
+    }
+  }
+
+  static Future<void> setIOSOptions() =>
+      _fcm.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+  static Future<void> _requestPermission() async {
+    if (Platform.isIOS == false) return;
+
+    final status = (await _fcm.getNotificationSettings()).authorizationStatus;
+    final granted = status == AuthorizationStatus.authorized;
+    if (granted == false) {
+      await _fcm.requestPermission(
+        alert: true,
+        announcement: true,
+        badge: true,
+        carPlay: true,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
       );
     }
   }

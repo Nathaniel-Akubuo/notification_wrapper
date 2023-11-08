@@ -1,22 +1,24 @@
 name: notification_wrapper
 description: A new Flutter package project.
 version: 0.0.1
-# homepage:
+homepage: https://github.com/Nathaniel-Akubuo/notification_wrapper
 
 environment:
-  sdk: '>=3.0.6 <4.0.0'
+  sdk: ">=3.0.6 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  # fcm
+  firebase_core: ^2.21.0
   firebase_messaging: ^14.7.3
+
+  # util
   flutter_local_notifications: ^16.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-
-flutter:
