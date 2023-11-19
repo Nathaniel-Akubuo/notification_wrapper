@@ -19,8 +19,10 @@ class HelperFunctions {
   static final _fcm = FirebaseMessaging.instance;
 
   static Future<void> setupLocalNotifications(
-    RemoteMessageCallback? onTap,
-  ) async {
+    RemoteMessageCallback? onTap, [
+    String? androidSound,
+    String? channelKey,
+  ]) async {
     await _requestPermission();
     await _localNotifications.initialize(
       const InitializationSettings(
@@ -35,10 +37,14 @@ class HelperFunctions {
       },
     );
 
-    var foregroundNotificationChannel = const AndroidNotificationChannel(
-      _channelKey,
+    var foregroundNotificationChannel = AndroidNotificationChannel(
+      channelKey ?? _channelKey,
       'Basic Notification Channel',
       importance: Importance.max,
+      playSound: androidSound != null,
+      sound: androidSound == null
+          ? null
+          : RawResourceAndroidNotificationSound(androidSound),
     );
 
     await _localNotifications
@@ -47,16 +53,24 @@ class HelperFunctions {
         ?.createNotificationChannel(foregroundNotificationChannel);
   }
 
-  static Future<void> showNotifications(RemoteMessage message) async {
+  static Future<void> showNotifications(
+    RemoteMessage message, [
+    String? androidSound,
+    String? channelKey,
+  ]) async {
     RemoteNotification notification = message.notification!;
     AndroidNotification? android = message.notification!.android;
 
     if (android != null) {
-      const androidDetails = AndroidNotificationDetails(
-        _channelKey,
+      final androidDetails = AndroidNotificationDetails(
+        channelKey ?? _channelKey,
         'Basic Notification Channel',
         priority: Priority.max,
         importance: Importance.max,
+        playSound: androidSound != null,
+        sound: androidSound == null
+            ? null
+            : RawResourceAndroidNotificationSound(androidSound),
       );
 
       const iosDetails = DarwinNotificationDetails(presentSound: true);
@@ -65,7 +79,7 @@ class HelperFunctions {
         notification.hashCode,
         notification.title,
         notification.body,
-        const NotificationDetails(android: androidDetails, iOS: iosDetails),
+        NotificationDetails(android: androidDetails, iOS: iosDetails),
         payload: jsonEncode(message.toMap()),
       );
     }

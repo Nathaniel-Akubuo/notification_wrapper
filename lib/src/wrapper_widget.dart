@@ -14,6 +14,9 @@ class NotificationWrapperWidget extends StatefulWidget {
   final TokenCallback? onTokenRefresh;
   final TokenCallback? onGetToken;
 
+  final String? androidSoundFile;
+  final String? channelKey;
+
   const NotificationWrapperWidget({
     super.key,
     required this.child,
@@ -22,6 +25,8 @@ class NotificationWrapperWidget extends StatefulWidget {
     this.showNotification,
     this.onTokenRefresh,
     this.onGetToken,
+    this.androidSoundFile,
+    this.channelKey,
   });
 
   @override
@@ -40,7 +45,11 @@ class _NotificationWrapperWidgetState extends State<NotificationWrapperWidget> {
   }
 
   Future<void> _listenForNotifications() async {
-    await HelperFunctions.setupLocalNotifications(widget.onTap);
+    await HelperFunctions.setupLocalNotifications(
+      widget.onTap,
+      widget.androidSoundFile,
+      widget.channelKey,
+    );
     await HelperFunctions.setIOSOptions();
     var token = await _fcm.getToken();
     widget.onGetToken?.call(token);
@@ -60,7 +69,11 @@ class _NotificationWrapperWidgetState extends State<NotificationWrapperWidget> {
       if (widget.showNotification != null) {
         widget.showNotification!(event);
       } else {
-        HelperFunctions.showNotifications(event);
+        HelperFunctions.showNotifications(
+          event,
+          widget.androidSoundFile,
+          widget.channelKey,
+        );
       }
     });
 
