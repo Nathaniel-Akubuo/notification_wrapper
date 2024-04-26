@@ -10,6 +10,7 @@ class NotificationWrapperWidget extends StatefulWidget {
   final RemoteMessageCallback? onNotificationReceived;
   final RemoteMessageCallback? onTap;
   final RemoteMessageCallback? showNotification;
+  final RemoteMessageCallback? backgroundHandler;
 
   final TokenCallback? onTokenRefresh;
   final TokenCallback? onGetToken;
@@ -23,6 +24,7 @@ class NotificationWrapperWidget extends StatefulWidget {
     this.onNotificationReceived,
     this.onTap,
     this.showNotification,
+    this.backgroundHandler,
     this.onTokenRefresh,
     this.onGetToken,
     this.androidSoundFile,
@@ -78,6 +80,9 @@ class _NotificationWrapperWidgetState extends State<NotificationWrapperWidget> {
     });
 
     _fcm.onTokenRefresh.listen(widget.onTokenRefresh);
+
+    FirebaseMessaging.onBackgroundMessage(
+        widget.backgroundHandler ?? firebaseBackgroundHandler);
   }
 
   @override
