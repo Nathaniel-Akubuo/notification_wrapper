@@ -8,9 +8,10 @@ class NotificationWrapperWidget extends StatefulWidget {
   final Widget child;
 
   final RemoteMessageCallback? onNotificationReceived;
-  final RemoteMessageCallback? onTap;
+  final PayloadCallback? onTap;
   final RemoteMessageCallback? showNotification;
   final RemoteMessageCallback? backgroundHandler;
+  final bool Function(RemoteMessage)? shouldShowNotification;
 
   final TokenCallback? onTokenRefresh;
   final TokenCallback? onGetToken;
@@ -25,6 +26,7 @@ class NotificationWrapperWidget extends StatefulWidget {
     this.onTap,
     this.showNotification,
     this.backgroundHandler,
+    this.shouldShowNotification,
     this.onTokenRefresh,
     this.onGetToken,
     this.androidSoundFile,
@@ -68,21 +70,25 @@ class _NotificationWrapperWidgetState extends State<NotificationWrapperWidget> {
 
     FirebaseMessaging.onMessage.listen((event) {
       widget.onNotificationReceived?.call(event);
-      if (widget.showNotification != null) {
-        widget.showNotification!(event);
-      } else {
-        HelperFunctions.showNotifications(
-          event,
-          widget.androidSoundFile,
-          widget.channelKey,
-        );
+      var shouldShow = (widget.shouldShowNotification?.call(event) ?? true);
+      if (shouldShow) {
+        if (widget.showNotification != null) {
+          widget.showNotification!(event);
+        } else {
+          HelperFunctions.showNotifications(
+            event,
+            widget.androidSoundFile,
+            widget.channelKey,
+          );
+        }
       }
     });
 
     _fcm.onTokenRefresh.listen(widget.onTokenRefresh);
 
-    FirebaseMessaging.onBackgroundMessage(
-        widget.backgroundHandler ?? firebaseBackgroundHandler);
+    if (widget.backgroundHandler != null) {
+      FirebaseMessaging.onBackgroundMessage(widget.backgroundHandler!);
+    }
   }
 
   @override

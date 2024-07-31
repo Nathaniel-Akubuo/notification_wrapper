@@ -19,7 +19,7 @@ class HelperFunctions {
   static final _fcm = FirebaseMessaging.instance;
 
   static Future<void> setupLocalNotifications(
-    RemoteMessageCallback? onTap, [
+    PayloadCallback? onTap, [
     String? androidSound,
     String? channelKey,
   ]) async {
@@ -33,7 +33,7 @@ class HelperFunctions {
           localNotificationsBackgroundHandler,
       onDidReceiveNotificationResponse: (details) {
         var map = jsonDecode(details.payload ?? '{}');
-        onTap?.call(RemoteMessage.fromMap(map));
+        onTap?.call(map);
       },
     );
 
@@ -80,7 +80,7 @@ class HelperFunctions {
         notification.title,
         notification.body,
         NotificationDetails(android: androidDetails, iOS: iosDetails),
-        payload: jsonEncode(message.toMap()),
+        payload: jsonEncode(message.data),
       );
     }
   }

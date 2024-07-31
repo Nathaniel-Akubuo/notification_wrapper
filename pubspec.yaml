@@ -12,8 +12,8 @@ dependencies:
     sdk: flutter
 
   # fcm
-  firebase_core: ^2.21.0
-  firebase_messaging: ^14.7.3
+  firebase_core: ^2.30.1
+  firebase_messaging: ^14.9.1
 
   # util
   flutter_local_notifications: ^16.1.0
