@@ -16,7 +16,7 @@ dependencies:
   firebase_messaging: ^14.9.1
 
   # util
-  flutter_local_notifications: ^16.1.0
+  flutter_local_notifications: ^17.2.3
 
 dev_dependencies:
   flutter_test:
