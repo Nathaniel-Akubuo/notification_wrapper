@@ -85,6 +85,30 @@ class HelperFunctions {
     }
   }
 
+  static Future<void> showLocalNotification({
+    String? title,
+    String? body,
+    String? payload,
+    String? channelKey,
+  }) async {
+    final androidDetails = AndroidNotificationDetails(
+      channelKey ?? _channelKey,
+      'Basic Notification Channel',
+      priority: Priority.max,
+      importance: Importance.max,
+    );
+
+    const iosDetails = DarwinNotificationDetails(presentSound: true);
+
+    _localNotifications.show(
+      title.hashCode,
+      title,
+      body,
+      NotificationDetails(android: androidDetails, iOS: iosDetails),
+      payload: payload,
+    );
+  }
+
   static Future<void> setIOSOptions() =>
       _fcm.setForegroundNotificationPresentationOptions(
         alert: true,
