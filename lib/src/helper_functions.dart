@@ -28,6 +28,7 @@ class HelperFunctions {
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
+        macOS: DarwinInitializationSettings(),
       ),
       onDidReceiveBackgroundNotificationResponse:
           localNotificationsBackgroundHandler,
