@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notification_wrapper/src/typedefs.dart';
+import 'package:notification_wrapper/src/fcm_wrapper.dart';
 
 final _localNotifications = FlutterLocalNotificationsPlugin();
 
@@ -16,7 +17,7 @@ Future<void> firebaseBackgroundHandler(RemoteMessage message) async {}
 const _channelKey = 'notificationChannelKey';
 
 class HelperFunctions {
-  static final _fcm = FirebaseMessaging.instance;
+  static final _wrapper = FCMWrapper.instance;
 
   static Future<void> setupLocalNotifications(
     PayloadCallback? onTap, [
@@ -111,7 +112,7 @@ class HelperFunctions {
   }
 
   static Future<void> setIOSOptions() =>
-      _fcm.setForegroundNotificationPresentationOptions(
+      _wrapper.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
@@ -120,10 +121,11 @@ class HelperFunctions {
   static Future<void> _requestPermission() async {
     if (Platform.isIOS == false) return;
 
-    final status = (await _fcm.getNotificationSettings()).authorizationStatus;
+    final status =
+        (await _wrapper.getNotificationSettings()).authorizationStatus;
     final granted = status == AuthorizationStatus.authorized;
     if (granted == false) {
-      await _fcm.requestPermission(
+      await _wrapper.requestPermission(
         alert: true,
         announcement: true,
         badge: true,
