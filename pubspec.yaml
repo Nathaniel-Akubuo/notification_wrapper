@@ -2,6 +2,7 @@ name: notification_wrapper
 description: A new Flutter package project.
 version: 0.0.2
 homepage: https://github.com/Nathaniel-Akubuo/notification_wrapper
+publish_to: none
 
 environment:
   sdk: ">=3.0.6 <4.0.0"
@@ -10,6 +11,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  jpush_flutter:
+    git:
+      url: https://github.com/jpush/jpush-flutter-plugin
+      ref: dev-3.x
 
   # fcm
   firebase_core: ^4.2.1
