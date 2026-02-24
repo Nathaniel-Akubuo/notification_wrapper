@@ -8,6 +8,7 @@ class NotificationWrapperWidget extends StatefulWidget {
   final Widget child;
 
   final RemoteMessageCallback? onNotificationReceived;
+  final RemoteMessageCallback? onMessageOpenedApp;
   final PayloadCallback? onTap;
   final RemoteMessageCallback? showNotification;
   final RemoteMessageCallback? backgroundHandler;
@@ -23,6 +24,7 @@ class NotificationWrapperWidget extends StatefulWidget {
     super.key,
     required this.child,
     this.onNotificationReceived,
+    this.onMessageOpenedApp,
     this.onTap,
     this.showNotification,
     this.backgroundHandler,
@@ -61,11 +63,11 @@ class _NotificationWrapperWidgetState extends State<NotificationWrapperWidget> {
     RemoteMessage? initialMessage = await _fcm.getInitialMessage();
 
     if (initialMessage != null) {
-      widget.onNotificationReceived?.call(initialMessage);
+      widget.onMessageOpenedApp?.call(initialMessage);
     }
 
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      widget.onNotificationReceived?.call(event);
+      widget.onMessageOpenedApp?.call(event);
     });
 
     FirebaseMessaging.onMessage.listen((event) {
