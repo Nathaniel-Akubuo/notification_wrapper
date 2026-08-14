@@ -7,6 +7,10 @@ class FCMWrapper {
 
   static final _fcm = FirebaseMessaging.instance;
 
+  Future<String?> getToken() => _fcm.getToken();
+
+  Future<String?> getAPNSToken() => _fcm.getAPNSToken();
+
   Future<void> subscribeToTopic(String topic) => _fcm.subscribeToTopic(topic);
 
   Future<void> unsubscribeFromTopic(String topic) =>
